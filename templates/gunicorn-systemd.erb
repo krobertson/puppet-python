@@ -12,7 +12,7 @@ Environment=ENVIRONMENT=<%= @environment %>
 <%- if @virtualenv -%>
 Environment=PYTHONPATH=<%= @virtualenv %>
 <%- end -%>
-ExecStart=/usr/bin/gunicorn --workers <%= @workers ? @workers || @processorcount.to_i*2 + 1 %> --bind <%= @bind %> <%= @appmodule %>
+ExecStart=/usr/bin/gunicorn --workers <%= @workers ? @workers : @processorcount.to_i*2 + 1 %> --bind <%= @bind %> <%= @appmodule %>
 
 [Install]
 WantedBy=multi-user.target
