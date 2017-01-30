@@ -96,12 +96,26 @@ define python::gunicorn (
 
   validate_re($log_level, 'debug|info|warning|error|critical', "Invalid \$log_level value ${log_level}")
 
-  file { "/etc/gunicorn.d/${name}":
-    ensure  => $ensure,
-    mode    => '0644',
-    owner   => 'root',
-    group   => 'root',
-    content => template($template),
-  }
 
+  case $::osfamily {
+    'Debian': {
+      file { "/etc/gunicorn.d/${name}":
+        ensure  => $ensure,
+        mode    => '0644',
+        owner   => 'root',
+        group   => 'root',
+        content => template($template),
+      }
+    }
+
+    'RedHat': {
+      ::systemd::unit_file { 'gunicorn.service':
+        content => template("python/gunicorn-systemd.erb"),
+      }
+    }
+
+    default: {
+      fail("Unsupported osfamily: ${::osfamily} The 'netbox' module only supports osfamily Debian or RedHat.")
+    }
+  }
 }

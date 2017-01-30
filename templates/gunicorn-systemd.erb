@@ -1,0 +1,18 @@
+[Unit]
+Description=gunicorn daemon for <%= @name %>
+After=network.target
+
+[Service]
+User=<%= @owner %>
+Group=<%= @group %>
+WorkingDirectory=<%= @dir %>
+<%- if @environment -%>
+Environment=ENVIRONMENT=<%= @environment %>
+<%- end -%>
+<%- if @virtualenv -%>
+Environment=PYTHONPATH=<%= @virtualenv %>
+<%- end -%>
+ExecStart=/usr/bin/gunicorn --workers <%= @workers ? @workers || @processorcount.to_i*2 + 1 %> --bind <%= @bind %> <%= @appmodule %>
+
+[Install]
+WantedBy=multi-user.target
